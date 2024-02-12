@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  sqlserver:
+    image: "mcr.microsoft.com/mssql/server:2019-latest"
+    user: root
+    container_name: "sqlserver"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${PWD}
+      MSSQL_PID: "Express"
+    ports:
+      - "1433:1433"
+    volumes:
+      - ./data:/var/opt/mssql/data
+      - ./data/Testing_ETL.bak:/var/opt/mssql/data/Testing_ETL.bak
+    command: sh -c "/opt/mssql/bin/sqlservr & sleep 30 && if [ ! -e /var/opt/mssql/data/Testing_ETL.mdf ]; then touch /var/opt/mssql/data/Testing_ETL.mdf; fi && if [ ! -e /var/opt/mssql/data/Testing_ETL_log.ldf ]; then touch /var/opt/mssql/data/Testing_ETL_log.ldf; fi && tail -f /dev/null"
+    restart: "unless-stopped"
